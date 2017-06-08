@@ -11,5 +11,9 @@
     <string name="sign_up">Sign Up</string>
     <string name="fresh_config">Fresh Config</string>
     <string name="cause_crash">Cause Crash</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="location_permission_denied">Permission denied</string>
+    <string name="permission_required_toast">Permission required</string>
+    <string name="permission_rationale_location">Permission location</string>
     <string name="banner_ad_unit_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
 </resources>
