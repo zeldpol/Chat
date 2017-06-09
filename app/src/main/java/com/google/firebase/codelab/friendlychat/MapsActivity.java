@@ -1,7 +1,9 @@
 package com.google.firebase.codelab.friendlychat;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -20,10 +22,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import static android.graphics.Color.CYAN;
-import static android.graphics.Color.MAGENTA;
+import static android.R.attr.colorPrimary;
+import static com.google.firebase.codelab.friendlychat.R.attr.colorAccent;
+
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         ActivityCompat.OnRequestPermissionsResultCallback, GoogleMap.OnMyLocationButtonClickListener {
@@ -46,6 +50,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     double longitude;
     double latitude;
     int zoomLevel = 16;
+    public static boolean check;
+
 
 
 
@@ -60,14 +66,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
         gps = new TrackGPS(MapsActivity.this);
         if(gps.canGetLocation()) {
             longitude = gps.getLongitude();
             latitude = gps.getLatitude();
 
-            //Show longitude and latitude for user
+                       //Show longitude and latitude for user
             //Toast.makeText(getApplicationContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
         }
+
+    }
+
+
+    final public boolean checkMyLocationInChat(double longitude, double latitude){
+
+        if(latitude <= 47.202207+0.0005 && latitude >= 47.202207-0.0005 &&
+                longitude <= 38.935407+0.0005 && longitude >= 38.935407-0.0005){
+            return  true;
+        } else {
+            return false;
+        }
+
 
     }
 
@@ -143,6 +163,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap map) {
         mMap = map;
         mMap.setOnMyLocationButtonClickListener(this);
+        mMap.setMinZoomPreference(18);
 
 
         // /.performClick();
@@ -158,7 +179,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
 
-        // Add a marker on SFEDU commun
+/*        // Add a marker on SFEDU commun
         LatLng sfcommun = new LatLng(47.207083, 38.939926);
         mMap.addMarker(new MarkerOptions().position(sfcommun).title("Marker in SFEDU Community num 6"));
         mMap.addCircle(new CircleOptions()
@@ -166,7 +187,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .radius(50)
                 .strokeColor(CYAN)
                 .fillColor(0));
-
+*/
 
         // Add marker on SFEDU corps D
         LatLng sfeduD = new LatLng(47.202207, 38.935407);
@@ -174,8 +195,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addCircle(new CircleOptions()
                 .center(sfeduD)
                 .radius(50)
-                .strokeColor(MAGENTA)
+                .strokeColor(colorAccent)
                 .fillColor(0));
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if(checkMyLocationInChat(gps.getLongitude(), gps.getLatitude())) {
+                    startActivity(new Intent(MapsActivity.this, MainActivity.class));
+                }
+                return false;
+            }
+        });
 
     }
 
